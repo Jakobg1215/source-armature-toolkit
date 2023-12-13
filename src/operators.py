@@ -192,6 +192,32 @@ class SATSymmetryApplyOperator(bpy.types.Operator):
     bl_label = "Apply"
 
     def execute(self, context):
+        properties = context.scene.satproperties
+        armature = properties.target_armature
+
+        saved_constraint = []
+
+        for bone in armature.pose.bones:
+            for constraint in bone.constraints:
+                if constraint.name.startswith("SAT Symmetry"):
+                    continue
+
+                saved_constraint.append((bone.name, constraint.name, constraint.mute))
+                constraint.mute = True
+
+        context.view_layer.objects.active = armature
+        bpy.ops.object.mode_set(mode='POSE')
+        bpy.ops.pose.select_all(action='SELECT')
+        bpy.ops.pose.armature_apply(selected=False)
+        bpy.ops.object.mode_set(mode='OBJECT')
+
+        bpy.ops.sat.symmetry_remove()
+
+        for bone_name, constraint_name, constraint_mute in saved_constraint:
+            bone = armature.pose.bones.get(bone_name)
+            constraint = bone.constraints.get(constraint_name)
+            constraint.mute = constraint_mute
+
         return {'FINISHED'}
 
 
