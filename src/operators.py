@@ -75,7 +75,7 @@ class SATSymmetryAddOperator(bpy.types.Operator):
             if bone_name.startswith(BONE_PREFIX):
                 valvebones.append(bone_name[len(BONE_PREFIX):])
 
-        paired_bones = []
+        paired_bones = {}
 
         for bone_name in valvebones:
             # TODO: Create functions or something to make this repeat less.
@@ -83,39 +83,35 @@ class SATSymmetryAddOperator(bpy.types.Operator):
                 pair_bone_name = "R_" + bone_name[len("L_"):]
 
                 if pair_bone_name in valvebones:
-                    paired_bones.append((bone_name, pair_bone_name))
-                    valvebones.remove(pair_bone_name)
-
-                valvebones.remove(bone_name)
+                    if bone_name in paired_bones:
+                        continue
+                    paired_bones[bone_name] = pair_bone_name
 
             if bone_name.endswith("_L"):
                 pair_bone_name = bone_name[:-len("_L")] + "_R"
 
                 if pair_bone_name in valvebones:
-                    paired_bones.append((bone_name, pair_bone_name))
-                    valvebones.remove(pair_bone_name)
-
-                valvebones.remove(bone_name)
+                    if bone_name in paired_bones:
+                        continue
+                    paired_bones[bone_name] = pair_bone_name
 
             if bone_name.startswith("R_"):
                 pair_bone_name = "L_" + bone_name[len("R_"):]
 
                 if pair_bone_name in valvebones:
-                    paired_bones.append((pair_bone_name, bone_name))
-                    valvebones.remove(pair_bone_name)
-
-                valvebones.remove(bone_name)
+                    if bone_name in paired_bones:
+                        continue
+                    paired_bones[pair_bone_name] = bone_name
 
             if bone_name.endswith("_R"):
                 pair_bone_name = bone_name[:-len("_R")] + "_L"
 
                 if pair_bone_name in valvebones:
-                    paired_bones.append((pair_bone_name, bone_name))
-                    valvebones.remove(pair_bone_name)
+                    if bone_name in paired_bones:
+                        continue
+                    paired_bones[pair_bone_name] = bone_name
 
-                valvebones.remove(bone_name)
-
-        for left_bone_name, right_bone_name in paired_bones:
+        for left_bone_name, right_bone_name in paired_bones.items():
             left_bone = armature.pose.bones.get(BONE_PREFIX + left_bone_name)
             right_bone = armature.pose.bones.get(BONE_PREFIX + right_bone_name)
 
