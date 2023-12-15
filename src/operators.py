@@ -1,6 +1,6 @@
 import bpy
 
-BONE_PREFIX = "ValveBiped.Bip01_"
+VALVEBIPED_PREFIX = "ValveBiped.Bip01_"
 
 
 class SATRenameBonesOperator(bpy.types.Operator):
@@ -14,11 +14,11 @@ class SATRenameBonesOperator(bpy.types.Operator):
         valvebones = []
 
         for bone in armature_data.bones:
-            if bone.name.startswith(BONE_PREFIX):
+            if bone.name.startswith(VALVEBIPED_PREFIX):
                 valvebones.append(bone)
 
         for bone in valvebones:
-            bone_name = bone.name[len(BONE_PREFIX):]
+            bone_name = bone.name[len(VALVEBIPED_PREFIX):]
 
             if bone_name.startswith("L_"):
                 bone_name_trimmed = bone_name[len("L"):]
@@ -44,17 +44,17 @@ class SATRestoreBonesOperator(bpy.types.Operator):
         valvebones = []
 
         for bone in armature_data.bones:
-            if bone.name.startswith(BONE_PREFIX):
+            if bone.name.startswith(VALVEBIPED_PREFIX):
                 valvebones.append(bone)
 
         for bone in valvebones:
-            bone_name = bone.name[len(BONE_PREFIX):]
+            bone_name = bone.name[len(VALVEBIPED_PREFIX):]
 
             if bone_name.endswith("_L"):
-                bone.name = BONE_PREFIX + "L_" + bone_name[:-len("_L")]
+                bone.name = VALVEBIPED_PREFIX + "L_" + bone_name[:-len("_L")]
 
             if bone_name.endswith("_R"):
-                bone.name = BONE_PREFIX + "R_" + bone_name[:-len("_R")]
+                bone.name = VALVEBIPED_PREFIX + "R_" + bone_name[:-len("_R")]
 
         return {'FINISHED'}
 
@@ -72,8 +72,8 @@ class SATSymmetryAddOperator(bpy.types.Operator):
         valvebones = []
 
         for bone_name in armature.pose.bones.keys():
-            if bone_name.startswith(BONE_PREFIX):
-                valvebones.append(bone_name[len(BONE_PREFIX):])
+            if bone_name.startswith(VALVEBIPED_PREFIX):
+                valvebones.append(bone_name[len(VALVEBIPED_PREFIX):])
 
         paired_bones = {}
 
@@ -112,8 +112,8 @@ class SATSymmetryAddOperator(bpy.types.Operator):
                     paired_bones[pair_bone_name] = bone_name
 
         for left_bone_name, right_bone_name in paired_bones.items():
-            left_bone = armature.pose.bones.get(BONE_PREFIX + left_bone_name)
-            right_bone = armature.pose.bones.get(BONE_PREFIX + right_bone_name)
+            left_bone = armature.pose.bones.get(VALVEBIPED_PREFIX + left_bone_name)
+            right_bone = armature.pose.bones.get(VALVEBIPED_PREFIX + right_bone_name)
 
             # TODO: There is only two things that change between left and right so lot of duplicent code to be removed.
             if properties.symmetry_side == "SATSR":
