@@ -1,4 +1,5 @@
 import bpy
+from . import bonesort
 
 
 class SourceArmatureToolkitProperties(bpy.types.PropertyGroup):
@@ -7,11 +8,15 @@ class SourceArmatureToolkitProperties(bpy.types.PropertyGroup):
             return False
         return object.type == 'ARMATURE'
 
+    def update_armature(self, context):
+        bonesort.sort_bones(context)
+
     target_armature: bpy.props.PointerProperty(
         type=bpy.types.Object,
         name="Armature",
         description="Armature that will be used to perform operations on",
-        poll=poll_armature
+        poll=poll_armature,
+        update=update_armature
     )
 
     symmetry_side: bpy.props.EnumProperty(
